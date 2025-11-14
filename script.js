@@ -142,8 +142,6 @@ document.getElementById("borrar").addEventListener("click", () => {
     return;
   }
 
-
-  
   localStorage.removeItem("usuarios");
   datosMostrados.innerHTML = "";
   datosMostrados.style.display = "none";
