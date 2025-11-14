@@ -13,7 +13,6 @@ function actualizarProgreso() {
   barraProgreso.style.width = porcentaje + "%";
 }
 
-// Eventos para progreso
 [nombre, email, edad].forEach(input => {
   input.addEventListener("input", actualizarProgreso);
 });
@@ -38,7 +37,7 @@ document.getElementById("guardar").addEventListener("click", () => {
   }
 
   if (!validarEmail(usuario.email)) {
-    alert("Por favor escriba un email válido.");
+    alert("Por favor ingrese un email válido.");
     return;
   }
 
@@ -50,6 +49,7 @@ document.getElementById("guardar").addEventListener("click", () => {
 
   document.getElementById("formUsuario").reset();
   barraProgreso.style.width = "0%";
+  mostrarDatos(); // Actualiza la vista si está abierta
 });
 
 // Mostrar / Ocultar datos
@@ -61,18 +61,30 @@ btnVerDatos.addEventListener("click", () => {
     return;
   }
 
-  // Si ya están visibles → ocultarlos
   if (datosMostrados.style.display === "block") {
     datosMostrados.style.display = "none";
     btnVerDatos.textContent = "Ver Datos";
     return;
   }
 
-  // Mostrar datos
+  mostrarDatos();
+});
+
+// Función que muestra los registros
+function mostrarDatos() {
+  let registros = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+  if (registros.length === 0) {
+    datosMostrados.style.display = "none";
+    btnVerDatos.textContent = "Ver Datos";
+    return;
+  }
+
   datosMostrados.innerHTML = "";
   datosMostrados.style.display = "block";
+  btnVerDatos.textContent = "Ocultar Datos";
 
-  registros.forEach(reg => {
+  registros.forEach((reg, index) => {
     let div = document.createElement("div");
     div.classList.add("card");
 
@@ -80,14 +92,31 @@ btnVerDatos.addEventListener("click", () => {
       <p><strong>Nombre:</strong> ${reg.nombre}</p>
       <p><strong>Email:</strong> ${reg.email}</p>
       <p><strong>Edad:</strong> ${reg.edad}</p>
+
+      <button class="eliminarIndividual" data-index="${index}">
+        Eliminar este registro
+      </button>
       <hr>
     `;
 
     datosMostrados.appendChild(div);
   });
 
-  btnVerDatos.textContent = "Ocultar Datos";
-});
+  // Eventos de eliminar individual
+  document.querySelectorAll(".eliminarIndividual").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      let i = e.target.getAttribute("data-index");
+
+      let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      usuarios.splice(i, 1); // elimina 1 usuario en la posición i
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+      alert("Registro eliminado ❌");
+
+      mostrarDatos();
+    });
+  });
+}
 
 // Borrar todo
 document.getElementById("borrar").addEventListener("click", () => {
@@ -103,15 +132,10 @@ document.getElementById("borrar").addEventListener("click", () => {
   datosMostrados.style.display = "none";
   btnVerDatos.textContent = "Ver Datos";
 
-  alert("Todos los datos han sido borrados ❌");
+  alert("Todos los datos fueron borrados ❌");
 });
-
-
-
 
 // Limpiar formulario
 document.getElementById("limpiar").addEventListener("click", () => {
   barraProgreso.style.width = "0%";
 });
-
-

@@ -131,3 +131,49 @@ footer {
   padding: 15px 0;
   margin-top: 40px;
 }
+/* 🌟 Tarjetas de datos guardados */
+.datosMostrados .card {
+  background: #ffffff;
+  border-left: 6px solid #441eb8;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.3s ease;
+}
+
+/* Títulos y textos */
+.datosMostrados .card p {
+  color: #000;
+  margin: 6px 0;
+  font-size: 1rem;
+}
+
+/* Botón individual */
+.eliminarIndividual {
+  margin-top: 10px;
+  width: 100%;
+  background-color: #d32f2f;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.eliminarIndividual:hover {
+  background-color: #9a0007;
+}
+
+/* 📌 Animación */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
