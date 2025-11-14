@@ -3,26 +3,27 @@ const email = document.getElementById("email");
 const edad = document.getElementById("edad");
 const barraProgreso = document.getElementById("barraProgreso");
 const datosMostrados = document.getElementById("datosMostrados");
-const btnVerDatos = document.getElementById("verDatos");
+const verDatosBtn = document.getElementById("verDatos");
 
-// Validación email
+// Validación de email
 function validarEmail(correo) {
-  let expresion = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return expresion.test(correo);
+  return /\S+@\S+\.\S+/.test(correo);
 }
 
-// Barra de progreso
+// Actualizar barra de progreso
 function actualizarProgreso() {
   let campos = [nombre.value.trim(), email.value.trim(), edad.value.trim()];
   let llenos = campos.filter(c => c !== "").length;
-  barraProgreso.style.width = (llenos / campos.length) * 100 + "%";
+  let porcentaje = (llenos / campos.length) * 100;
+  barraProgreso.style.width = porcentaje + "%";
 }
 
-[nombre, email, edad].forEach(i => {
-  i.addEventListener("input", actualizarProgreso);
+// Eventos para progreso
+[nombre, email, edad].forEach(input => {
+  input.addEventListener("input", actualizarProgreso);
 });
 
-// GUARDAR
+// Guardar información
 document.getElementById("guardar").addEventListener("click", () => {
 
   // Reset errores
@@ -38,108 +39,123 @@ document.getElementById("guardar").addEventListener("click", () => {
 
   let valido = true;
 
-  // Validar nombre
+  // Validación nombre
   if (!usuario.nombre) {
     document.getElementById("error-nombre").textContent = "⚠ El nombre es obligatorio.";
     valido = false;
   }
 
-  // Validar email vacío
+  // Validación email vacío
   if (!usuario.email) {
     document.getElementById("error-email").textContent = "⚠ El email es obligatorio.";
     valido = false;
-  }
-  // Validar email formato
+  } 
+  // Validación email incorrecto
   else if (!validarEmail(usuario.email)) {
     document.getElementById("error-email").textContent = "⚠ Correo inválido.";
     valido = false;
   }
 
-  // Validar edad
+  // Validación edad
   if (!usuario.edad) {
     document.getElementById("error-edad").textContent = "⚠ La edad es obligatoria.";
     valido = false;
   }
 
+  // Si falla validación → cancelar
   if (!valido) return;
 
-  // Guardar en localStorage
-  let lista = JSON.parse(localStorage.getItem("usuarios")) || [];
-  lista.push(usuario);
-  localStorage.setItem("usuarios", JSON.stringify(lista));
+  // Guardar
+  let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+  usuarios.push(usuario);
+  localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
-  alert("Datos guardados ✔");
+  alert("✔ Usuario guardado correctamente.");
 
   document.getElementById("formUsuario").reset();
   barraProgreso.style.width = "0%";
 
-  if (datosMostrados.style.display === "block") mostrarDatos();
+  mostrarDatos();
 });
 
-// MOSTRAR / OCULTAR DATOS
-btnVerDatos.addEventListener("click", () => {
+// Mostrar y ocultar datos
+verDatosBtn.addEventListener("click", () => {
   if (datosMostrados.style.display === "block") {
     datosMostrados.style.display = "none";
-    btnVerDatos.textContent = "Ver Datos";
+    verDatosBtn.textContent = "Ver Datos";
   } else {
     mostrarDatos();
-    btnVerDatos.textContent = "Ocultar Datos";
+    verDatosBtn.textContent = "Ocultar Datos";
   }
 });
 
-// FUNCIÓN MOSTRAR DATOS
+// Mostrar datos en pantalla
 function mostrarDatos() {
   let registros = JSON.parse(localStorage.getItem("usuarios")) || [];
 
   if (registros.length === 0) {
-    alert("No hay datos para mostrar.");
+    alert("⚠ No hay datos para mostrar.");
+    datosMostrados.style.display = "none";
+    verDatosBtn.textContent = "Ver Datos";
     return;
   }
 
+  datosMostrados.innerHTML = "";
   datosMostrados.style.display = "block";
-  datosMostrados.innerHTML = "<h3>Usuarios Registrados</h3>";
 
   registros.forEach((reg, index) => {
     let div = document.createElement("div");
-    div.classList.add("cardRegistro");
+    div.classList.add("card");
 
     div.innerHTML = `
+      <p><strong>#${index + 1}</strong></p>
       <p><strong>Nombre:</strong> ${reg.nombre}</p>
       <p><strong>Email:</strong> ${reg.email}</p>
       <p><strong>Edad:</strong> ${reg.edad}</p>
-      <button class="btnEliminar" onclick="eliminar(${index})">Eliminar</button>
+
+      <button class="eliminarIndividual" onclick="eliminarRegistro(${index})">
+        🗑 Eliminar
+      </button>
+      <hr>
     `;
 
     datosMostrados.appendChild(div);
   });
 }
 
-// ELIMINAR INDIVIDUAL
-function eliminar(i) {
-  let registros = JSON.parse(localStorage.getItem("usuarios")) || [];
-  registros.splice(i, 1);
-  localStorage.setItem("usuarios", JSON.stringify(registros));
+// Eliminar un registro individual
+function eliminarRegistro(i) {
+  let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+  usuarios.splice(i, 1);
+  localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+  alert("🗑 Registro eliminado.");
   mostrarDatos();
 }
 
-// BOTÓN BORRAR TODO
+// Borrar todos los datos
 document.getElementById("borrar").addEventListener("click", () => {
-  let datos = localStorage.getItem("usuarios");
+  let registros = JSON.parse(localStorage.getItem("usuarios")) || [];
 
-  if (!datos) {
-    alert("No hay datos que borrar.");
+  if (registros.length === 0) {
+    alert("⚠ No hay datos que borrar.");
     return;
   }
 
   localStorage.removeItem("usuarios");
   datosMostrados.innerHTML = "";
   datosMostrados.style.display = "none";
-  btnVerDatos.textContent = "Ver Datos";
+  verDatosBtn.textContent = "Ver Datos";
 
-  alert("Datos borrados ✔");
+  alert("🗑 Todos los datos fueron eliminados.");
 });
 
-// LIMPIAR FORMULARIO
+// Limpiar formulario
 document.getElementById("limpiar").addEventListener("click", () => {
   barraProgreso.style.width = "0%";
+
+  // borrar mensajes de error
+  document.getElementById("error-nombre").textContent = "";
+  document.getElementById("error-email").textContent = "";
+  document.getElementById("error-edad").textContent = "";
 });
