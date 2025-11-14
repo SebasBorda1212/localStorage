@@ -158,4 +158,13 @@ document.getElementById("limpiar").addEventListener("click", () => {
   document.getElementById("error-nombre").textContent = "";
   document.getElementById("error-email").textContent = "";
   document.getElementById("error-edad").textContent = "";
+
+  nombre.value = "";
+  email.value = "";
+  edad.value = "";
+
+  // ALERTA si no hay nada que limpiar
+  if (nombre.value === "" && email.value === "" && edad.value === "") {
+    alert("⚠ No hay datos que limpiar en el formulario.");
+  }
 });
