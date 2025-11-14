@@ -107,6 +107,8 @@ document.getElementById("borrar").addEventListener("click", () => {
 });
 
 
+
+
 // Limpiar formulario
 document.getElementById("limpiar").addEventListener("click", () => {
   barraProgreso.style.width = "0%";
