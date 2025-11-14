@@ -1,89 +1,100 @@
-const form = document.getElementById('formUsuario');
-const campos = ['nombre', 'email', 'edad'];
-const barra = document.getElementById('barraProgreso');
-const contenedorDatos = document.getElementById('datosMostrados');
+const nombre = document.getElementById("nombre");
+const email = document.getElementById("email");
+const edad = document.getElementById("edad");
+const barraProgreso = document.getElementById("barraProgreso");
+const datosMostrados = document.getElementById("datosMostrados");
 
-function validarCampo(id, mensaje) {
-  const campo = document.getElementById(id);
-  const error = document.getElementById(`error-${id}`);
-  if (campo.value.trim() === "") {
-    error.textContent = mensaje;
-    return false;
-  } else {
-    error.textContent = "";
-    return true;
-  }
+// Actualizar barra de progreso
+function actualizarProgreso() {
+  let campos = [nombre.value.trim(), email.value.trim(), edad.value.trim()];
+  let llenos = campos.filter(c => c !== "").length;
+  let porcentaje = (llenos / campos.length) * 100;
+  barraProgreso.style.width = porcentaje + "%";
 }
 
-function actualizarBarra() {
-  let completados = 0;
-  campos.forEach(campo => {
-    if (document.getElementById(campo).value.trim() !== "") completados++;
-  });
-  const porcentaje = (completados / campos.length) * 100;
-  barra.style.width = `${porcentaje}%`;
+// Eventos para progreso
+[nombre, email, edad].forEach(input => {
+  input.addEventListener("input", actualizarProgreso);
+});
+
+// Validar email real
+function validarEmail(correo) {
+  const expresion = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return expresion.test(correo);
 }
 
-form.addEventListener('input', actualizarBarra);
-
-document.getElementById('guardar').addEventListener('click', () => {
-  let valido = true;
-  if (!validarCampo('nombre', 'El nombre es obligatorio.')) valido = false;
-  if (!validarCampo('email', 'El email es obligatorio.')) valido = false;
-  if (!validarCampo('edad', 'La edad es obligatoria.')) valido = false;
-
-  if (!valido) return;
-
-  const datos = {
-    nombre: document.getElementById('nombre').value,
-    email: document.getElementById('email').value,
-    edad: document.getElementById('edad').value
+// Guardar información
+document.getElementById("guardar").addEventListener("click", () => {
+  let usuario = {
+    nombre: nombre.value.trim(),
+    email: email.value.trim(),
+    edad: edad.value.trim()
   };
 
-  // Guardar en localStorage
-  localStorage.setItem('usuario', JSON.stringify(datos));
-
-  // Mostrar mensaje de éxito
-  alert('✅ Datos guardados correctamente.');
-
-  // 🔹 Limpiar formulario después de guardar
-  form.reset();
-  barra.style.width = "0%";
-  contenedorDatos.style.display = 'none';
-
-  // 🔹 Borrar mensajes de error
-  campos.forEach(campo => {
-    document.getElementById(`error-${campo}`).textContent = "";
-  });
-});
-
-document.getElementById('verDatos').addEventListener('click', () => {
-  const datos = JSON.parse(localStorage.getItem('usuario'));
-  if (!datos) {
-    contenedorDatos.style.display = 'none';
-    return alert('⚠️ No hay datos guardados.');
+  if (!usuario.nombre || !usuario.email || !usuario.edad) {
+    alert("Por favor complete todos los campos.");
+    return;
   }
 
-  contenedorDatos.innerHTML = `
-    <h3>👤 Datos Guardados</h3>
-    <p><strong>Nombre:</strong> ${datos.nombre}</p>
-    <p><strong>Email:</strong> ${datos.email}</p>
-    <p><strong>Edad:</strong> ${datos.edad}</p>
-  `;
-  contenedorDatos.style.display = 'block';
+  if (!validarEmail(usuario.email)) {
+    alert("Por favor escriba un email válido.");
+    return;
+  }
+
+  let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+  usuarios.push(usuario);
+  localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+  alert("Datos guardados correctamente ✔");
+
+  document.getElementById("formUsuario").reset();
+  barraProgreso.style.width = "0%";
 });
 
-document.getElementById('borrar').addEventListener('click', () => {
-  localStorage.removeItem('usuario');
-  contenedorDatos.style.display = 'none';
-  barra.style.width = "0%";
-  alert('🗑️ Datos borrados del almacenamiento.');
-});
+// Mostrar datos
+document.getElementById("verDatos").addEventListener("click", mostrarDatos);
 
-document.getElementById('limpiar').addEventListener('click', () => {
-  barra.style.width = "0%";
-  contenedorDatos.style.display = 'none';
-  campos.forEach(campo => {
-    document.getElementById(`error-${campo}`).textContent = "";
+function mostrarDatos() {
+  let registros = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+  if (registros.length === 0) {
+    alert("No hay datos para mostrar ❗");
+    return;
+  }
+
+  datosMostrados.innerHTML = "";
+  datosMostrados.style.display = "block";
+
+  registros.forEach(reg => {
+    let div = document.createElement("div");
+    div.classList.add("card");
+
+    div.innerHTML = `
+      <p><strong>Nombre:</strong> ${reg.nombre}</p>
+      <p><strong>Email:</strong> ${reg.email}</p>
+      <p><strong>Edad:</strong> ${reg.edad}</p>
+      <hr>
+    `;
+
+    datosMostrados.appendChild(div);
   });
+}
+
+// Borrar todo
+document.getElementById("borrar").addEventListener("click", () => {
+  let registros = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+  if (registros.length === 0) {
+    alert("No hay datos para borrar ❗");
+    return;
+  }
+
+  localStorage.removeItem("usuarios");
+  datosMostrados.innerHTML = "";
+  alert("Todos los datos han sido borrados ❌");
+});
+
+// Limpiar formulario
+document.getElementById("limpiar").addEventListener("click", () => {
+  barraProgreso.style.width = "0%";
 });

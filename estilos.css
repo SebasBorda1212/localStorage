@@ -12,6 +12,7 @@ body {
   animation: gradientMove 12s ease infinite;
   color: #000;
 }
+
 @keyframes gradientMove {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -20,19 +21,15 @@ body {
 
 /* Encabezado */
 header {
-background-color: #160b36;
-color: white;
-font-weight: bold;
-box-shadow: 0 4px 20px rgba(25, 0, 255, 0.3);
-text-align: center;
-padding: 20px 0;
+  background-color: #160b36;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 20px rgba(25, 0, 255, 0.3);
+  text-align: center;
+  padding: 20px 0;
 }
 
-h1 {
-margin: 0;
-}
 main {
-  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -51,7 +48,6 @@ main {
 h2 {
   text-align: center;
   color: #000000;
-  margin-bottom: 20px;
 }
 
 label {
@@ -88,7 +84,7 @@ button {
   padding: 10px;
   border: none;
   background-color: #441eb8;
-  color: rgb(0, 0, 0);
+  color: #000;
   border-radius: 6px;
   cursor: pointer;
   transition: 0.3s;
@@ -114,31 +110,24 @@ button:hover {
   transition: width 0.3s ease;
 }
 
-/* 📋 Estilo para los datos mostrados */
+/* Datos mostrados */
 .datosMostrados {
   margin-top: 25px;
   background-color: #f9f9f9;
   border-radius: 10px;
   padding: 15px;
   border: 1px solid #ddd;
-  display: none;
-}
-
-.datosMostrados h3 {
-  margin-top: 0;
-  color: #000000;
 }
 
 .datosMostrados p {
+  font-size: 1rem;
   margin: 5px 0;
-  font-size: 0.95rem;
 }
 
-/* Footer */
 footer {
-text-align: center;
-background-color: #160b36;
-color: white;
-padding: 15px 0;
-margin-top: 40px;
+  text-align: center;
+  background-color: #160b36;
+  color: white;
+  padding: 15px 0;
+  margin-top: 40px;
 }
