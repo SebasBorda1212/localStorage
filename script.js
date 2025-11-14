@@ -3,6 +3,7 @@ const email = document.getElementById("email");
 const edad = document.getElementById("edad");
 const barraProgreso = document.getElementById("barraProgreso");
 const datosMostrados = document.getElementById("datosMostrados");
+const btnVerDatos = document.getElementById("verDatos");
 
 // Actualizar barra de progreso
 function actualizarProgreso() {
@@ -51,10 +52,8 @@ document.getElementById("guardar").addEventListener("click", () => {
   barraProgreso.style.width = "0%";
 });
 
-// Mostrar datos
-document.getElementById("verDatos").addEventListener("click", mostrarDatos);
-
-function mostrarDatos() {
+// Mostrar / Ocultar datos
+btnVerDatos.addEventListener("click", () => {
   let registros = JSON.parse(localStorage.getItem("usuarios")) || [];
 
   if (registros.length === 0) {
@@ -62,6 +61,14 @@ function mostrarDatos() {
     return;
   }
 
+  // Si ya están visibles → ocultarlos
+  if (datosMostrados.style.display === "block") {
+    datosMostrados.style.display = "none";
+    btnVerDatos.textContent = "Ver Datos";
+    return;
+  }
+
+  // Mostrar datos
   datosMostrados.innerHTML = "";
   datosMostrados.style.display = "block";
 
@@ -78,7 +85,9 @@ function mostrarDatos() {
 
     datosMostrados.appendChild(div);
   });
-}
+
+  btnVerDatos.textContent = "Ocultar Datos";
+});
 
 // Borrar todo
 document.getElementById("borrar").addEventListener("click", () => {
@@ -91,10 +100,16 @@ document.getElementById("borrar").addEventListener("click", () => {
 
   localStorage.removeItem("usuarios");
   datosMostrados.innerHTML = "";
+  datosMostrados.style.display = "none";
+  btnVerDatos.textContent = "Ver Datos";
+
   alert("Todos los datos han sido borrados ❌");
 });
+
 
 // Limpiar formulario
 document.getElementById("limpiar").addEventListener("click", () => {
   barraProgreso.style.width = "0%";
 });
+
+
